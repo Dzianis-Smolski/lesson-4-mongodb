@@ -3,6 +3,10 @@ import {ObjectId, WithId} from "mongodb";
 import {postsCollection} from "../../db/mongo.db";
 
 export const postRepository = {
+    async findPostsByBlogId(id: string): Promise<WithId<PostDBModel>[]> {
+        return await postsCollection.find({blogId: id}).toArray();
+    },
+
     async findAll(): Promise<WithId<PostDBModel>[]> {
         return postsCollection.find().toArray()
     },
