@@ -8,11 +8,10 @@ import {WithId} from "mongodb";
 export const postsService = {
     async findMany(id: string) {
         const posts = await postRepository.findPostsByBlogId(id);
-        const postList = posts.map(post => {
+
+        return posts.map(post => {
             return mapToPostViewModel(post);
         });
-
-        return postList;
     },
 
     async findById(id: string) {
