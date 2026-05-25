@@ -11,6 +11,10 @@ import {idValidation} from "../../core/middlewares/validation/id.validation";
 import {createNewPostForBlog} from "./handlers/createNewPostForBlog";
 import {getPostsOfBlog} from "./handlers/getPostsOfBlog";
 import {postInputValidation} from "../../posts/validation/posts-dto.validation";
+import {
+    paginationAndSortingValidation
+} from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
+import {BlogSortField} from "./input/blog-sort-field";
 
 
 export const blogsRouter = Router();
@@ -18,6 +22,7 @@ export const blogsRouter = Router();
 blogsRouter
     .get(
         '',
+        paginationAndSortingValidation(BlogSortField),
         getBlogList
     )
     .get(

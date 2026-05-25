@@ -1,8 +1,38 @@
 import {BlogCreateUpdateDTO, BlogDBModel, BlogViewModel} from "../types/blogs-types";
 import {blogsCollection} from "../../db/mongo.db";
 import {ObjectId, WithId} from "mongodb";
+import {BlogQueryInput} from "../routers/input/blog-query.input";
 
 export const blogRepository = {
+    async findMany(queryDTO: BlogQueryInput): Promise<{ items: WithId<BlogDBModel>[]; totalCount: number }> {
+        const {
+            searchNameTerm,
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection
+        } = queryDTO;
+
+
+
+        const skip = (pageNumber -1) * pageSize;
+        const filter: any = {};
+
+        if (searchNameTerm) {
+            filter.name = { $regex: searchNameTerm, $options: 'i' };
+        }
+
+        const items = await blogsCollection
+        .find(filter)
+        .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .toArray()
+
+        const totalCount = await blogsCollection.countDocuments(filter);
+        return { items, totalCount };
+    },
+
     async findAll(): Promise<WithId<BlogDBModel>[]> {
         return blogsCollection.find().toArray()
     },
