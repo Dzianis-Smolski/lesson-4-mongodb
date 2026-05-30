@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import {body} from "express-validator";
 import {blogRepository} from "../../blogs/repositories/blogs.repository";
 
 export const postInputValidation = [
@@ -25,7 +25,7 @@ export const postInputValidation = [
     .isString().withMessage("blogId should be string")
     .custom((value) => {
         const blog = blogRepository.findById(value);
-        if (!blog) throw new Error("blogId does not exist");
+        if (!blog) throw new Error("id does not exist");
         return true;
     })
 ];

@@ -5,9 +5,11 @@ import {PaginationAndSorting} from "../../types/pagination-and-sorting";
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
-const DEFAULT_SORT_BY = 'createAt'
+const DEFAULT_SORT_BY = 'createAt';
+const DEFAULT_SEARCH_NAME_TERM = null;
 
 export const paginationAndSortingDefault: PaginationAndSorting<string> = {
+    searchNameTerm: DEFAULT_SEARCH_NAME_TERM,
     pageNumber: DEFAULT_PAGE_NUMBER,
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: DEFAULT_SORT_BY,
@@ -18,6 +20,13 @@ export const paginationAndSortingValidation =  <T extends string>(sortFieldsEnum
     const allowedSortFields = Object.values(sortFieldsEnum)
 
     return [
+        query('searchNameTerm')
+            .default(DEFAULT_SEARCH_NAME_TERM)
+            .optional()
+            .isString()
+            .trim()
+            .isLength({ min: 1, max: 15 }),
+
         query('pageNumber')
             .default(DEFAULT_PAGE_NUMBER)
             .isInt({ min: 1 })

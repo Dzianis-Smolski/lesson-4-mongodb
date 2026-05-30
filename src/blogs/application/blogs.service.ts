@@ -1,23 +1,12 @@
 import {BlogQueryInput} from "../routers/input/blog-query.input";
-import {BlogViewModel} from "../types/blogs-types";
+import {BlogDBModel, BlogViewModel} from "../types/blogs-types";
 import {blogRepository} from "../repositories/blogs.repository";
-import {mapToBlogViewModel} from "../routers/mapers/map-to-blog-view-mode.util";
-import {PaginationResult} from "../../core/types/pagination";
-
+import {WithId} from "mongodb";
 
 export const blogsService = {
-    async findMany(queryInput: BlogQueryInput)
-        : Promise<PaginationResult<BlogViewModel>>
-    {
-        const { items, totalCount } = await blogRepository.findMany((queryInput))
-
-        return {
-            pagesCount: Math.ceil(totalCount / queryInput.pageSize),
-            page: queryInput.pageNumber,
-            pageSize: queryInput.pageSize,
-            totalCount,
-            items: items.map(mapToBlogViewModel)
-        };
+    async findMany(queryDTO: BlogQueryInput)
+            : Promise<{items: WithId<BlogDBModel>[], totalCount: number}> {
+        return blogRepository.findMany(queryDTO)
     },
 
     async findById(id: string) {

@@ -10,16 +10,13 @@ export let client: MongoClient;
 export let blogsCollection: Collection<BlogDBModel>;
 export let postsCollection: Collection<PostDBModel>;
 export async function runDB(url: string): Promise<void> {
-    debugger
     client = new MongoClient(url);
     const db = await client.db(SETTINGS.DB_NAME);
 
     blogsCollection = db.collection(BLOGS_COLLECTION_NAME);
     postsCollection = db.collection(POSTS_COLLECTION_NAME);
-    debugger
     try {
         await client.connect()
-        debugger
         await db.command({ping: 1})
         console.log('Connected to DB');
     } catch (e) {

@@ -19,7 +19,6 @@ export const postsService = {
     },
 
     async create(blogId: string, blogDbById: WithId<BlogDBModel>, body: PostCreateUpdateDTO) {
-        debugger
         const newPost = {
             title: body.title,
             shortDescription: body.shortDescription,

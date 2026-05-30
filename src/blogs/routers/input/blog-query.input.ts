@@ -1,12 +1,4 @@
 import {BlogSortField} from "./blog-sort-field";
-import {SortDirection} from "../../../core/types/sort-direction";
+import {PaginationAndSorting} from "../../../core/types/pagination-and-sorting";
 
-
-export type BlogQueryInput = {
-    searchNameTerm: string | null;
-    pageNumber: number;
-    pageSize: number;
-    sortBy: BlogSortField;
-    sortDirection: SortDirection;
-};
-
+export type BlogQueryInput = PaginationAndSorting<BlogSortField>;

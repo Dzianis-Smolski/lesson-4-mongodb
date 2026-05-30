@@ -13,8 +13,6 @@ export const blogRepository = {
             sortDirection
         } = queryDTO;
 
-
-
         const skip = (pageNumber -1) * pageSize;
         const filter: any = {};
 
@@ -22,18 +20,20 @@ export const blogRepository = {
             filter.name = { $regex: searchNameTerm, $options: 'i' };
         }
 
-        const items = await blogsCollection
+        const items: WithId<BlogDBModel>[] = await blogsCollection
         .find(filter)
-        .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
+        .sort({ [sortBy]: sortDirection })
         .skip(skip)
         .limit(pageSize)
         .toArray()
 
         const totalCount = await blogsCollection.countDocuments(filter);
+
         return { items, totalCount };
     },
 
-    async findAll(): Promise<WithId<BlogDBModel>[]> {
+    async findAll(): Promise<
+        WithId<BlogDBModel>[]> {
         return blogsCollection.find().toArray()
     },
 

@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {getBlogList} from "./handlers/get-blog-list.handler";
+import { getBlogListHandler} from "./handlers/get-blog-list.handler";
 import {createNewBlog} from "./handlers/create-new-blog.handler";
 import {updateBlogById} from "./handlers/update-blog-by-id.handler";
 import {getBlogById} from "./handlers/get-blog-by-id.handler";
@@ -23,7 +23,7 @@ blogsRouter
     .get(
         '',
         paginationAndSortingValidation(BlogSortField),
-        getBlogList
+        getBlogListHandler
     )
     .get(
         '/:id',
@@ -44,8 +44,8 @@ blogsRouter
         createNewBlog
     )
     .post('/:id/posts',
-        idValidation,
         superAdminGuardMiddleware,
+        idValidation,
         postInputValidation,
         inputValidationMiddleware,
         createNewPostForBlog,
