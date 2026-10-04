@@ -5,7 +5,7 @@ import {Mode} from "../../types/PaginationMode";
 export const DEFAULT_PAGE_NUMBER = 1;
 export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
-export const DEFAULT_SORT_BY = 'createAt';
+export const DEFAULT_SORT_BY = 'createdAt';
 export const DEFAULT_SEARCH_NAME_TERM = null;
 
 export const paginationAndSortingValidation =  <T extends string>(sortFieldsEnum: Record<string, T>, entityMode: Mode) => {

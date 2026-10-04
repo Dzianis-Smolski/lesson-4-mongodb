@@ -5,7 +5,7 @@ const nameValidation = body("name")
     .notEmpty().withMessage('name can not be empty')
     .isString().withMessage('name should be string')
     .trim()
-    .isLength({ min: 1, max: 15 }).withMessage("name length should be <= 15")
+    .isLength({ min: 3, max: 10 }).withMessage("name length should be <= 15")
 
 
 const descriptionValidation = body("description")

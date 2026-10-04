@@ -1,15 +1,16 @@
 import {Collection, MongoClient} from "mongodb";
 import {SETTINGS} from "../core/settings/settings";
+import {userReadDTO} from "../user/dto/users-read-dto";
 
 const USER_COLLECTION_NAME = 'user-view';
 
 export let readClient : MongoClient;
-export let userViewCollection: Collection; //TODO добавить Type <....>
+export let userReadCollection: Collection<userReadDTO>;
 export async function runReadDB(url: string): Promise<void> {
     readClient = new MongoClient(url);
-    const db = readClient .db(SETTINGS.DB_READ_NAME);
+    const db = readClient.db(SETTINGS.DB_READ_NAME);
 
-    userViewCollection = db.collection(USER_COLLECTION_NAME);
+    userReadCollection = db.collection(USER_COLLECTION_NAME);
     try {
         await readClient .connect()
         await db.command({ping: 1})
