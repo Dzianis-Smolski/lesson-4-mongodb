@@ -12,11 +12,11 @@ export async function runReadDB(url: string): Promise<void> {
 
     userReadCollection = db.collection(USER_COLLECTION_NAME);
     try {
-        await readClient .connect()
+        await readClient.connect()
         await db.command({ping: 1})
         console.log('Connected to READ_DB');
     } catch (e) {
-        await readClient .close();
+        await readClient.close();
         throw new Error('READ_DB is not connected');
     }
 }

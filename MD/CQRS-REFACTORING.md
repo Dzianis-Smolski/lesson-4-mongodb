@@ -97,46 +97,44 @@ Change stream — единственное место, где write-сторон
   `start-user-change-stream.ts:3,5` на `usersDbDTO`. Поле `_id` не нужно описывать руками:
   драйвер даёт `WithId<T>` для документов, уже лежащих в коллекции.
 
-## Текущее состояние кода
+## Текущее состояние кода (модуль `user`)
 
 | Файл | Состояние |
 |---|---|
 | `user/dto/user-db-dto.ts` | готов |
 | `user/dto/users-read-dto.ts` | готов (тип read-проекции) |
-| `user/dto/users-output-dto.ts` | готов (ответ клиенту) |
+| `user/dto/users-output-dto.ts` | готов (`createdAt: string`) |
 | `user/dto/users-input-dto.ts` | готов (тело POST) |
-| `user/domain/userCommandService.ts` | `create` готов, `Promise<any>` ещё заменить на `Promise<string>` |
-| `user/infrastructure/user.repository.ts` | `create` — сигнатура есть, тела нет |
-| `user/infrastructure/user.query.repository.ts` | заглушки, читает write-коллекцию в закомментированном коде |
-| `user/api/routers/user.router.ts` | маршруты есть, валидации нет |
-| `user/api/routers/handlers/*` | все три пустые |
+| `user/validation/users-input-dto.validation.ts` | готов (login, password, email) |
+| `user/domain/user.command.service.ts` | `create` готов |
+| `user/infrastructure/user.repository.ts` | `create` готов, `delete` — заглушка |
+| `user/infrastructure/user.query.repository.ts` | заглушки |
+| `user/api/routers/mapers/map-to-user-output.ts` | готов |
+| `user/api/routers/user.router.ts` | готов |
+| `user/api/routers/handlers/create-user.handler.ts` | готов, POST работает |
+| `user/api/routers/handlers/get-user-list.handler.ts` | пуст |
+| `user/api/routers/handlers/delete-user-by-id.handler.ts` | пуст |
+
+## Протестировано
+
+- `npm run watch` + `npm run dev` (в среде без `pnpm`, есть `npm`)
+- `POST /users` с `{login, password, email}` → `201` и тело `{id, login, email, createdAt}`
+- Документ появляется в `read-model.user-view` — change stream работает
+- `core/settings/settings.ts:5` — опечатка `BD_READ_NAME` исправлена, read-стор поднимается
 
 ## Что делать дальше
 
-**Шаг 1, остаток — тело `userRepository.create`:**
-- импорт `userWriteCollection` из `../../db/mongo.write.db`
-- `const result = await userWriteCollection.insertOne(user)`
-- `return result.insertedId.toString()` (проверить, что отдаёт драйвер)
-- объявить `Promise<string>`
-- образец: `blogs.repository.ts:34-37`
-- заменить `Promise<any>` в `userCommandService.ts:8` на `Promise<string>`
-
-**Шаг 2 — хендлер и роутер POST:**
-- создать валидацию формы (нет файла; образец — `blogs/validation/blogs-input-dto.validation.ts`)
-- `user.router.ts` — добавить валидацию и `inputValidationMiddleware` (в отличие от blogs-роутера, там их нет)
-- `create-user.handler.ts` — `matchedData` с `locations: ['body']`, вызов `userCommandService.create`, 201
-- ответ: `{ id }`. Не читать из `usersQueryRepository` — это гонка (change stream асинхронный) и ломает CQS
-
-**Шаг 3 — read-сторона:**
-- `userReadDTO` уже без пароля — правильно
-- `usersQueryRepository` перевести на `userReadCollection`, отдавать плоскую проекцию с `id: string`
+**Шаг 3 — read-сторона (GET /users):**
+- `usersQueryRepository` перевести на `userReadCollection`, отдавать `userReadDTO` с плоским `id: string`
 - доделать ветки `update` / `delete` в `start-user-change-stream.ts:22-28`
-- `userQueryService` + `get-user-list.handler.ts`
+- создать `userQueryService` — симметричный `userCommandService`
+- `get-user-list.handler.ts` — пагинация, сортировка, фильтрация по login/email, ответ `PaginationResult<userReadDTO>`
+- `user.router.ts` GET — добавить валидацию пагинации/сортировки (как в blogs)
 
 **Шаг 4 — `delete`:**
 - `userRepository.delete` не должен возвращать захардкоженный `true`, считать из `deletedCount`
 - не делать `findById` перед удалением (команда не читает)
-- `delete-user-by-id.handler.ts`
+- `delete-user-by-id.handler.ts` — `matchedData` по `:id`, вызов `userCommandService.delete`, 204
 
 ## Известные баги вне модуля `user`
 

@@ -3,7 +3,7 @@ import {Collection} from "mongodb";
 import {usersDbDTO} from "../../user/dto/user-db-dto";
 
 export function startUserChangeStream(collection: Collection<usersDbDTO>) {
-    const changeStream = collection.watch();
+    const changeStream = collection.watch([], { fullDocument: 'updateLookup' });
 
     changeStream.on("change", async (event: any) => {
         console.log("EVENT:", event);
@@ -20,11 +20,21 @@ export function startUserChangeStream(collection: Collection<usersDbDTO>) {
         }
 
         if (event.operationType === "update") {
-            // обновление read‑модели
+            await userReadCollection.updateOne(
+                {id: event.documentKey._id.toString()},
+                {
+                    $set: {
+                        login: event.fullDocument.login,
+                        email: event.fullDocument.email
+                    }
+                }
+            )
         }
 
         if (event.operationType === "delete") {
-            // удаление из read‑модели
+            const id = event.documentKey._id.toString();
+
+            await userReadCollection.deleteOne({id})
         }
     });
 }
