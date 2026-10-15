@@ -1,4 +1,4 @@
-import {PaginatedOutput} from "../../core/types/paginated.output";
+import {PaginationMeta} from "../../core/types/pagination";
 
 
 export type PostOutputViewModel = {
@@ -11,6 +11,6 @@ export type PostOutputViewModel = {
     createdAt: Date,
 }
 
-export type PostListPaginatedOutput = PaginatedOutput & {
+export type PostListPaginatedOutput = PaginationMeta & {
     items: PostOutputViewModel[],
 }

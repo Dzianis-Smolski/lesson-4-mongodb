@@ -4,3 +4,9 @@ export enum SortField {
     BlogName = 'blogName',
     Name = 'name',
 }
+
+export enum UserSortField {
+    CreatedAt = 'createdAt',
+    Login = 'login',
+    Email = 'email',
+}

@@ -97,44 +97,38 @@ Change stream — единственное место, где write-сторон
   `start-user-change-stream.ts:3,5` на `usersDbDTO`. Поле `_id` не нужно описывать руками:
   драйвер даёт `WithId<T>` для документов, уже лежащих в коллекции.
 
-## Текущее состояние кода (модуль `user`)
+### Шаг 2 — write-сторона: хендлер и роутер POST
 
-| Файл | Состояние |
-|---|---|
-| `user/dto/user-db-dto.ts` | готов |
-| `user/dto/users-read-dto.ts` | готов (тип read-проекции) |
-| `user/dto/users-output-dto.ts` | готов (`createdAt: string`) |
-| `user/dto/users-input-dto.ts` | готов (тело POST) |
-| `user/validation/users-input-dto.validation.ts` | готов (login, password, email) |
-| `user/domain/user.command.service.ts` | `create` готов |
-| `user/infrastructure/user.repository.ts` | `create` готов, `delete` — заглушка |
-| `user/infrastructure/user.query.repository.ts` | заглушки |
-| `user/api/routers/mapers/map-to-user-output.ts` | готов |
-| `user/api/routers/user.router.ts` | готов |
-| `user/api/routers/handlers/create-user.handler.ts` | готов, POST работает |
-| `user/api/routers/handlers/get-user-list.handler.ts` | пуст |
-| `user/api/routers/handlers/delete-user-by-id.handler.ts` | пуст |
+**Создано:**
+- `src/user/validation/users-input-dto.validation.ts` — валидация логина, пароля, email.
+- `src/user/api/routers/user.router.ts` — маршрут POST с валидацией и `inputValidationMiddleware`.
+- `src/user/api/routers/handlers/create-user.handler.ts` — вызов `userCommandService.create`, ответ `201` с телом `{id, login, email, createdAt}`.
+- `src/user/api/routers/mapers/map-to-user-output.ts` — маппер из `WithId<usersDbDTO>` в `userOutPutDTO`.
+- `src/user/domain/userCommandService.ts` — хеш пароля, `createdAt`, вызов репозитория.
+- `src/user/infrastructure/user.repository.ts` — `insertOne` и возврат `WithId<usersDbDTO>`.
 
-## Протестировано
+**Протестировано:**
+- `POST /users` возвращает `201` и тело `{id, login, email, createdAt}`.
+- Документ появляется в `read-model.user-view` — change stream работает.
 
-- `npm run watch` + `npm run dev` (в среде без `pnpm`, есть `npm`)
-- `POST /users` с `{login, password, email}` → `201` и тело `{id, login, email, createdAt}`
-- Документ появляется в `read-model.user-view` — change stream работает
-- `core/settings/settings.ts:5` — опечатка `BD_READ_NAME` исправлена, read-стор поднимается
+### Шаг 3 — read-сторона: GET /users
 
-## Что делать дальше
+**Создано:**
+- `src/user/domain/user.query.service.ts` — прокси к `usersQueryRepository`.
+- `src/user/api/routers/handlers/get-user-list.handler.ts` — обработчик GET с валидацией, пагинацией, сортировкой, фильтрацией.
+- `src/user/api/routers/mapers/map-to-user-list-paginated-output.util.ts` — маппер для формирования paginated ответа.
+- `src/user/api/routers/user.router.ts` — маршрут GET с валидацией пагинации/сортировки (использует `paginationAndSortingValidation` и `inputValidationMiddleware`).
+- `src/user/infrastructure/user.query.repository.ts` — читает из `userReadCollection`, фильтры по `login`/`email` через `$regex`, сортировка по `createdAt`, пагинация.
+- `src/db/change-streams/start-user-change-stream.ts` — обновление read‑модели при `insert`, `update`, `delete` change‑событий.
 
-**Шаг 3 — read-сторона (GET /users):**
-- `usersQueryRepository` перевести на `userReadCollection`, отдавать `userReadDTO` с плоским `id: string`
-- доделать ветки `update` / `delete` в `start-user-change-stream.ts:22-28`
-- создать `userQueryService` — симметричный `userCommandService`
-- `get-user-list.handler.ts` — пагинация, сортировка, фильтрация по login/email, ответ `PaginationResult<userReadDTO>`
-- `user.router.ts` GET — добавить валидацию пагинации/сортировки (как в blogs)
+**Протестировано:**
+- `GET /users` возвращает `200` и телом `{pagesCount, page, pageSize, totalCount, items: [...]}` с корректной пагинацией, сортировкой и фильтром.
 
-**Шаг 4 — `delete`:**
-- `userRepository.delete` не должен возвращать захардкоженный `true`, считать из `deletedCount`
-- не делать `findById` перед удалением (команда не читает)
-- `delete-user-by-id.handler.ts` — `matchedData` по `:id`, вызов `userCommandService.delete`, 204
+### Шаг 4 — delete (запланировано)
+
+**Что осталось сделать:**
+- `userRepository.delete` — считать `deletedCount` вместо захардкоженного `true`.
+- `delete-user-by-id.handler.ts` — `matchedData` по `:id`, вызов `userCommandService.delete`, ответ `204`.
 
 ## Известные баги вне модуля `user`
 

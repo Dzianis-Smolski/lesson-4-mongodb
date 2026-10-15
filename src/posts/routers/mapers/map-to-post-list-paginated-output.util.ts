@@ -1,14 +1,13 @@
 import {WithId} from "mongodb";
-import {PaginatedOutput} from "../../../core/types/paginated.output";
 import {PostDBModel} from "../../types/posts-types";
 import {mapToPostViewModel} from "./map-to-post-view-mode.util";
-// import {PostOutputViewModel} from "../../output/post.output";
+import {PaginationMeta} from "../../../core/types/pagination";
 
 
 
 export const mapToBlogListPaginatedOutput = (
     posts: WithId<PostDBModel>[],
-    meta: PaginatedOutput
+    meta: PaginationMeta
 ) => {
 
 return {

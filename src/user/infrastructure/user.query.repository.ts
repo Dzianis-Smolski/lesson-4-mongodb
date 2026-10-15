@@ -1,59 +1,37 @@
+import {userReadCollection} from "../../db/mongo.read.db";
+import {userReadDTO} from "../dto/users-read-dto";
 import {SortQueryFilterType} from "../../core/types/sort-query-filter-type";
 
 export const usersQueryRepository = {
-    async findMany() {
-
-    },
-    async findAllUsers(
-        sortQueryDto: SortQueryFilterType,
-    )
-        // : Promise<IPagination<IUserView[]>>
-    {
+    async findUsers(sortQueryDto: SortQueryFilterType): Promise<{ items: userReadDTO[]; totalCount: number }> {
         const {
+            sortBy,
             pageNumber,
             pageSize,
             sortDirection,
             searchLoginTerm,
             searchEmailTerm
         } = sortQueryDto;
-//
-//         const loginAndEmailFilter = {};
-//
-//         const totalCount = await db
-//         .getCollections()
-//         .usersCollection.countDocuments(loginAndEmailFilter);
-//
-//         const users = await db
-//         .getCollections()
-//         .usersCollection.find(loginAndEmailFilter)
-//         .sort({ [sortBy]: sortDirection })
-//         .skip((pageNumber - 1) * pageSize)
-//         .limit(pageSize)
-//         .toArray();
-//
-//         return {
-//             pagesCount: Math.ceil(totalCount / pageSize),
-//             page: pageNumber,
-//             pageSize: pageSize,
-//             totalCount,
-//             items: users.map((u) => this._getInView(u)),
-//         };
+
+        const skip = (pageNumber - 1) * pageSize;
+        const filter: any = {};
+
+        if (searchLoginTerm) {
+            filter.login = { $regex: searchLoginTerm, $options: 'i' };
+        }
+        if (searchEmailTerm) {
+            filter.email = { $regex: searchEmailTerm, $options: 'i' };
+        }
+
+        const items: userReadDTO[] = await userReadCollection
+        .find(filter)
+        .sort({ [sortBy]: sortDirection })
+        .skip(skip)
+        .limit(pageSize)
+        .toArray();
+
+        const totalCount = await userReadCollection.countDocuments(filter);
+
+        return { items, totalCount };
     },
-//     async findById(id: string): Promise<IUserView | null> {
-//         const user = await db
-//         .getCollections()
-//         .usersCollection.findOne({ _id: new ObjectId(id) });
-//         return user ? this._getInView(user) : null;
-//     },
-//     _getInView(user: WithId<IUserDB>): IUserView {
-//         return {
-//             id: user._id.toString(),
-//             login: user.login,
-//             email: user.email,
-//             createdAt: user.createdAt.toISOString(),
-//         };
-//     },
-//     _checkObjectId(id: string): boolean {
-//         return ObjectId.isValid(id);
-//     },
 };

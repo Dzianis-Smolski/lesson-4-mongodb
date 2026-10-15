@@ -1,7 +1,10 @@
-export type PaginationResult<T> = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: T[]
-}
+export type PaginationMeta = {
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+};
+
+export type PaginationResult<T> = PaginationMeta & {
+    items: T[];
+};

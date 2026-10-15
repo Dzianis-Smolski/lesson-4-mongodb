@@ -1,4 +1,4 @@
-import {PaginatedOutput} from "../../../core/types/paginated.output";
+import {PaginationMeta} from "../../../core/types/pagination";
 
 export type BlogOutputViewModel = {
     id: string,
@@ -9,6 +9,6 @@ export type BlogOutputViewModel = {
     isMembership: boolean
 }
 
-export type BlogListPaginatedOutput = PaginatedOutput & {
+export type BlogListPaginatedOutput = PaginationMeta & {
     items: BlogOutputViewModel[],
 }

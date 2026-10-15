@@ -7,6 +7,8 @@ export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
 export const DEFAULT_SORT_BY = 'createdAt';
 export const DEFAULT_SEARCH_NAME_TERM = null;
+export const DEFAULT_SEARCH_LOGIN_TERM = null;
+export const DEFAULT_SEARCH_EMAIL_TERM = null;
 
 export const paginationAndSortingValidation =  <T extends string>(sortFieldsEnum: Record<string, T>, entityMode: Mode) => {
     const allowedSortFields = Object.values(sortFieldsEnum)
@@ -42,13 +44,31 @@ export const paginationAndSortingValidation =  <T extends string>(sortFieldsEnum
     if (entityMode === 'blog') {
         result.push(
             query('searchNameTerm')
-                .optional()
                 .default(DEFAULT_SEARCH_NAME_TERM)
-                .optional()
                 .isString()
                 .trim()
                 .isLength({ min: 1, max: 15 }),
             );
+    }
+
+    if (entityMode === 'user') {
+        result.push(
+            query('searchLoginTerm')
+                .optional()
+                .default(DEFAULT_SEARCH_LOGIN_TERM)
+                .isString()
+                .trim()
+                .isLength({ min: 3, max: 10 }),
+        )
+        result.push(
+            query('searchEmailTerm')
+                .optional()
+                .default(DEFAULT_SEARCH_EMAIL_TERM)
+                .isString()
+                .trim()
+                .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+                .withMessage('searchEmailTerm must be a valid email')
+        )
     }
 
     return result;

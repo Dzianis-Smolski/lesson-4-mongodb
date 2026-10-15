@@ -1,1 +1,1 @@
-export type Mode = 'blog' | 'post';
+export type Mode = 'blog' | 'post' | 'user';
