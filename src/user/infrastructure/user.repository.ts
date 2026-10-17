@@ -1,6 +1,6 @@
 import {usersDbDTO} from "../dto/user-db-dto";
 import {userWriteCollection} from "../../db/mongo.write.db";
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 export const userRepository = {
     async create(newUser: usersDbDTO) : Promise<WithId<usersDbDTO>>  {
@@ -13,6 +13,11 @@ export const userRepository = {
     },
 
     async delete(id: string): Promise<boolean> {
-        return true;
+        const deleteResult = await userWriteCollection.deleteOne({_id: new ObjectId(id)})
+        return !!deleteResult.deletedCount;
     },
+
+    async deleteUserList() {
+        return await userWriteCollection.drop();
+    }
 }

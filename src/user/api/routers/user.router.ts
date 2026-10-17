@@ -8,6 +8,8 @@ import {
     paginationAndSortingValidation
 } from "../../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import {UserSortField} from "../../../core/types/sort-field";
+import {superAdminGuardMiddleware} from "../../../auth/middlewares/super-admin.guard-middleware";
+import {idValidation} from "../../../core/middlewares/validation/id.validation";
 
 
 export const userRouter = Router();
@@ -15,17 +17,22 @@ export const userRouter = Router();
 userRouter
     .get(
         '',
+        superAdminGuardMiddleware,
         paginationAndSortingValidation(UserSortField, 'user'),
         inputValidationMiddleware,
         getUserListHandler
     )
     .post(
         '',
+        superAdminGuardMiddleware,
         userInputValidation,
         inputValidationMiddleware,
         createUserHandler
         )
     .delete(
         '/:id',
+        superAdminGuardMiddleware,
+        idValidation,
+        inputValidationMiddleware,
         deleteUserByIdHandler
     )

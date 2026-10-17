@@ -24,10 +24,7 @@ export const userCommandService = {
     async update(dto: any): Promise<any> {
 
     },
-    async delete(dto: any): Promise<any> {
-        // const user = await usersRepository.findById(id);
-        // if (!user) return false;
-        //
-        // return await usersRepository.delete(id);
+    async delete(id: string): Promise<boolean> {
+        return  await userRepository.delete(id)
     }
 }
