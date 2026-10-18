@@ -18,6 +18,6 @@ export const userRepository = {
     },
 
     async deleteUserList() {
-        return await userWriteCollection.drop();
+        return await userWriteCollection.deleteMany({});
     }
 }

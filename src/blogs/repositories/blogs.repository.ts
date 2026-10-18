@@ -66,6 +66,6 @@ export const blogRepository = {
     },
 
     async deleteBlogList() {
-        return await blogsCollection.drop();
+        return await blogsCollection.deleteMany({});
     }
 }

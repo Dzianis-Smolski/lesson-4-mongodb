@@ -86,6 +86,6 @@ export const postRepository = {
     },
 
     async deletePostList() {
-      return await postsCollection.drop();
+      return await postsCollection.deleteMany({});
     },
 }

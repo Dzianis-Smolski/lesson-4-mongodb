@@ -34,4 +34,8 @@ export const usersQueryRepository = {
 
         return { items, totalCount };
     },
+
+    async clearUserReadModel() {
+        return await userReadCollection.deleteMany({});
+    }
 };
