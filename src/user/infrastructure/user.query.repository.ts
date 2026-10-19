@@ -1,6 +1,6 @@
-import {userReadCollection} from "../../db/mongo.read.db";
 import {userReadDTO} from "../dto/users-read-dto";
 import {SortQueryFilterType} from "../../core/types/sort-query-filter-type";
+import {userWriteCollection} from "../../db/mongo.write.db";
 
 export const usersQueryRepository = {
     async findUsers(sortQueryDto: SortQueryFilterType): Promise<{ items: userReadDTO[]; totalCount: number }> {
@@ -23,19 +23,22 @@ export const usersQueryRepository = {
             filter.email = { $regex: searchEmailTerm, $options: 'i' };
         }
 
-        const items: userReadDTO[] = await userReadCollection
-        .find(filter)
-        .sort({ [sortBy]: sortDirection })
-        .skip(skip)
-        .limit(pageSize)
-        .toArray();
+        const documents = await userWriteCollection
+            .find(filter)
+            .sort({ [sortBy]: sortDirection })
+            .skip(skip)
+            .limit(pageSize)
+            .toArray();
 
-        const totalCount = await userReadCollection.countDocuments(filter);
+        const items: userReadDTO[] = documents.map((document) => ({
+            id: document._id.toString(),
+            login: document.login,
+            email: document.email,
+            createdAt: document.createdAt,
+        }));
+
+        const totalCount = await userWriteCollection.countDocuments(filter);
 
         return { items, totalCount };
-    },
-
-    async clearUserReadModel() {
-        return await userReadCollection.deleteMany({});
     }
 };
