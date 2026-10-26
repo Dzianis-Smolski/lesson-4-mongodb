@@ -5,7 +5,7 @@ const loginValidation = body("login")
     .notEmpty().withMessage('Login can not be empty')
     .isString().withMessage('Login should be string')
     .trim()
-    .isLength({ min: 1, max: 15 }).withMessage("Login length should be <= 15")
+    .isLength({ min: 3, max: 10 }).withMessage("Login length should be <= 15")
 
 const passwordValidation = body("password")
     .exists().withMessage("Passwords is required")
