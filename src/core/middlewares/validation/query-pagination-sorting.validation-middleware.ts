@@ -66,7 +66,6 @@ export const paginationAndSortingValidation =  <T extends string>(sortFieldsEnum
                 .default(DEFAULT_SEARCH_EMAIL_TERM)
                 .isString()
                 .trim()
-                .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
                 .withMessage('searchEmailTerm must be a valid email')
         )
     }

@@ -13,12 +13,10 @@ export const getUserListHandler = async (req: Request, res: Response, next: Next
             locations: ["query"],
             includeOptionals: true,
         });
-        // Ensure sortDirection is SortDirection enum
         let sortDirection: SortDirection;
         if (typeof sanitizedQuery.sortDirection === "string") {
             sortDirection = sanitizedQuery.sortDirection === "asc" ? SortDirection.Asc : SortDirection.Desc;
         } else {
-            // Assume it's already SortDirection enum (from default)
             sortDirection = sanitizedQuery.sortDirection as SortDirection;
         }
         const queryWithEnum = {

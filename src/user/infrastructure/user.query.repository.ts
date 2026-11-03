@@ -15,14 +15,20 @@ export const usersQueryRepository = {
 
         const skip = (pageNumber - 1) * pageSize;
         const filter: any = {};
+        const condition: any = [];
 
         if (searchLoginTerm) {
-            filter.login = { $regex: searchLoginTerm, $options: 'i' };
+            condition.push({login: {$regex: searchLoginTerm, $options: 'i'}} )
+            // filter.login = { $regex: searchLoginTerm, $options: 'i' };
         }
         if (searchEmailTerm) {
-            filter.email = { $regex: searchEmailTerm, $options: 'i' };
+            condition.push({email: { $regex: searchEmailTerm, $options: 'i'}} )
+            // filter.email = { $regex: searchEmailTerm, $options: 'i' };
         }
 
+        if (condition.length) {
+            filter.$or = condition;
+        }
         const documents = await userWriteCollection
             .find(filter)
             .sort({ [sortBy]: sortDirection })
@@ -40,5 +46,9 @@ export const usersQueryRepository = {
         const totalCount = await userWriteCollection.countDocuments(filter);
 
         return { items, totalCount };
+    },
+
+    async loginOrEmail(loginOrEmail: string) {
+        return await userWriteCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] })
     }
 };
