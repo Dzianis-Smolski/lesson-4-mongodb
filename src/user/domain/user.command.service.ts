@@ -1,5 +1,5 @@
 import {usersInput} from "../dto/users-input-dto";
-import {bcryptService} from "../../auth/dapters/bcrypt.service";
+import {bcryptService} from "../../auth/adapters/bcrypt.service";
 import {usersDbDTO} from "../dto/user-db-dto";
 import {userRepository} from "../infrastructure/user.repository";
 import {WithId} from "mongodb";

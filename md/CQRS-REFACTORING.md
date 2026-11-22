@@ -86,7 +86,7 @@ Change stream — единственное место, где write-сторон
   `userQueryService`.
 
 **Создано:**
-- `src/auth/dapters/bcrypt.service.ts` — `generateHash`, `checkPassword`.
+- `../src/auth/adapters` — `generateHash`, `checkPassword`.
 - `src/user/dto/user-db-dto.ts` — `usersDbDTO` (login, passwordHash, email, createdAt). Поле называется
   `passwordHash`, а не `password`: имя типа должно говорить правду о том, что реально лежит в БД.
 - `src/user/domain/userCommandService.ts` — `create(inputDTO: usersInput)` собирает `usersDbDTO` и вызывает репозиторий.

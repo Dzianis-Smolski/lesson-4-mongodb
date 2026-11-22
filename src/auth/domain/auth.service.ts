@@ -1,5 +1,5 @@
 import {usersQueryRepository} from "../../user/infrastructure/user.query.repository";
-import {bcryptService} from "../dapters/bcrypt.service";
+import {bcryptService} from "../adapters/bcrypt.service";
 
 
 export const authService = async (loginOrEmail: string, password: string) => {

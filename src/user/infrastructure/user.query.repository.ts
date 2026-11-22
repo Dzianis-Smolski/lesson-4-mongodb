@@ -19,11 +19,9 @@ export const usersQueryRepository = {
 
         if (searchLoginTerm) {
             condition.push({login: {$regex: searchLoginTerm, $options: 'i'}} )
-            // filter.login = { $regex: searchLoginTerm, $options: 'i' };
         }
         if (searchEmailTerm) {
             condition.push({email: { $regex: searchEmailTerm, $options: 'i'}} )
-            // filter.email = { $regex: searchEmailTerm, $options: 'i' };
         }
 
         if (condition.length) {
